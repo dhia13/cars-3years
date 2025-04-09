@@ -1,10 +1,10 @@
 
-import { useEffect } from "react";
-import { Map, Phone, Mail, MapPin, Clock } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { useEffect } from "react";
 
 const ContactPage = () => {
   useEffect(() => {
@@ -14,7 +14,7 @@ const ContactPage = () => {
   return (
     <>
       <Navbar />
-      
+
       <main>
         <section className="pt-24 pb-16 bg-gradient-to-b from-mercedes-black to-mercedes-darkgray text-white">
           <div className="container mx-auto px-4">
@@ -28,7 +28,7 @@ const ContactPage = () => {
             </ScrollReveal>
           </div>
         </section>
-        
+
         <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row gap-12">
@@ -38,7 +38,7 @@ const ContactPage = () => {
                     <h2 className="text-2xl font-serif font-bold mb-6">
                       Informations de Contact
                     </h2>
-                    
+
                     <div className="space-y-6">
                       <div className="flex items-start">
                         <div className="mr-4 mt-1 text-mercedes-blue">
@@ -48,31 +48,30 @@ const ContactPage = () => {
                           <h3 className="font-bold mb-1">Adresse</h3>
                           <address className="not-italic text-gray-600">
                             123 Rue des Exportateurs<br />
-                            Alger, Algérie
                           </address>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <div className="mr-4 mt-1 text-mercedes-blue">
                           <Phone size={20} />
                         </div>
                         <div>
                           <h3 className="font-bold mb-1">Téléphone</h3>
-                          <p className="text-gray-600">+213 123 456 789</p>
+                          <p className="text-gray-600">+213 794 064 884</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <div className="mr-4 mt-1 text-mercedes-blue">
                           <Mail size={20} />
                         </div>
                         <div>
                           <h3 className="font-bold mb-1">Email</h3>
-                          <p className="text-gray-600">contact@3ansdz.com</p>
+                          <p className="text-gray-600">awt707@gmail.com</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <div className="mr-4 mt-1 text-mercedes-blue">
                           <Clock size={20} />
@@ -87,7 +86,7 @@ const ContactPage = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="mt-8 pt-8 border-t border-gray-200">
                       <h3 className="font-bold mb-4">Suivez-nous</h3>
                       <div className="flex space-x-4">
@@ -111,7 +110,7 @@ const ContactPage = () => {
                   </div>
                 </ScrollReveal>
               </div>
-              
+
               <div className="lg:w-3/5">
                 <ScrollReveal delay={200}>
                   <div className="glass-card p-8 shadow-lg">
@@ -125,7 +124,7 @@ const ContactPage = () => {
             </div>
           </div>
         </section>
-        
+
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <ScrollReveal>
@@ -138,7 +137,7 @@ const ContactPage = () => {
                 </p>
               </div>
             </ScrollReveal>
-            
+
             <div className="max-w-3xl mx-auto">
               <div className="space-y-6">
                 <ScrollReveal delay={100}>
@@ -149,7 +148,7 @@ const ContactPage = () => {
                     </p>
                   </div>
                 </ScrollReveal>
-                
+
                 <ScrollReveal delay={200}>
                   <div className="glass-card p-6">
                     <h3 className="font-bold mb-2">Quels sont les délais moyens pour une exportation complète?</h3>
@@ -158,7 +157,7 @@ const ContactPage = () => {
                     </p>
                   </div>
                 </ScrollReveal>
-                
+
                 <ScrollReveal delay={300}>
                   <div className="glass-card p-6">
                     <h3 className="font-bold mb-2">Quels documents sont nécessaires pour l'exportation d'un véhicule?</h3>
@@ -167,7 +166,7 @@ const ContactPage = () => {
                     </p>
                   </div>
                 </ScrollReveal>
-                
+
                 <ScrollReveal delay={400}>
                   <div className="glass-card p-6">
                     <h3 className="font-bold mb-2">Comment se déroule le paiement pour vos services?</h3>
@@ -181,7 +180,7 @@ const ContactPage = () => {
           </div>
         </section>
       </main>
-      
+
       <Footer />
     </>
   );

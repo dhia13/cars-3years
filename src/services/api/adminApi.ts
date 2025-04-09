@@ -35,7 +35,7 @@ export const adminApi = {
   },
 
   // Update site config
-  updateSiteConfig: async (config: any) => {
+  updateSiteConfig: async (config: unknown) => {
     try {
       console.log('Updating site configuration:', config);
       const response = await fetch(`${API_BASE_URL}/admin/site-config`, {
@@ -82,7 +82,7 @@ export const adminApi = {
   },
   
   // Save custom page
-  saveCustomPage: async (pageKey: string, pageData: any) => {
+  saveCustomPage: async (pageKey: string, pageData: unknown) => {
     try {
       console.log('Saving custom page:', pageKey, pageData);
       const response = await fetch(`${API_BASE_URL}/admin/custom-page/${pageKey}`, {

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Car, Euro, Fuel, Gauge, Info, Share2, ShieldCheck } from "lucide-react";
+import { Calendar, Car, Euro, Fuel, Gauge, Info, Share2, ShieldCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useToast } from "@/hooks/use-toast";
 import { vehiclesApi } from "@/services/api";
@@ -49,6 +49,29 @@ const VehicleDetailsPage = () => {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Fonction pour passer à l'image suivante
+  const nextImage = () => {
+    if (!vehicle || !vehicle.images || vehicle.images.length <= 1) return;
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === vehicle.images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+  
+  // Fonction pour passer à l'image précédente
+  const prevImage = () => {
+    if (!vehicle || !vehicle.images || vehicle.images.length <= 1) return;
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? vehicle.images.length - 1 : prevIndex - 1
+    );
+  };
+
+  // Fonction pour aller à une image spécifique
+  const goToImage = (index: number) => {
+    if (!vehicle || !vehicle.images || index >= vehicle.images.length) return;
+    setCurrentImageIndex(index);
+  };
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -207,12 +230,58 @@ const VehicleDetailsPage = () => {
               <div className="lg:w-3/5">
                 <ScrollReveal>
                   {vehicle.images && vehicle.images.length > 0 ? (
-                    <div className="bg-gray-100 rounded-lg overflow-hidden">
-                      <img 
-                        src={getImageUrl(vehicle.images[0])} 
-                        alt={`${vehicle.make} ${vehicle.model}`} 
-                        className="w-full h-auto object-cover"
-                      />
+                    <div className="relative bg-gray-100 rounded-lg overflow-hidden">
+                      {/* Image carousel */}
+                      <div className="aspect-w-16 aspect-h-9 relative">
+                        <img 
+                          src={getImageUrl(vehicle.images[currentImageIndex])} 
+                          alt={`${vehicle.make} ${vehicle.model} - Image ${currentImageIndex + 1}`} 
+                          className="w-full h-full object-cover"
+                        />
+                        
+                        {/* Navigation buttons */}
+                        {vehicle.images.length > 1 && (
+                          <>
+                            <button 
+                              onClick={prevImage} 
+                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-mercedes-blue/80 text-white p-2 rounded-full"
+                              aria-label="Image précédente"
+                            >
+                              <ChevronLeft className="h-6 w-6" />
+                            </button>
+                            <button 
+                              onClick={nextImage} 
+                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-mercedes-blue/80 text-white p-2 rounded-full"
+                              aria-label="Image suivante"
+                            >
+                              <ChevronRight className="h-6 w-6" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* Image indicators */}
+                      {vehicle.images.length > 1 && (
+                        <div className="flex justify-center mt-4 gap-2 pb-2">
+                          {vehicle.images.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => goToImage(index)}
+                              className={`h-2 rounded-full transition-all ${
+                                currentImageIndex === index ? "w-8 bg-mercedes-blue" : "w-2 bg-gray-300"
+                              }`}
+                              aria-label={`Aller à l'image ${index + 1}`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Image counter */}
+                      {vehicle.images.length > 1 && (
+                        <div className="absolute top-2 right-2 bg-black/50 text-white text-sm px-2 py-1 rounded">
+                          {currentImageIndex + 1} / {vehicle.images.length}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="bg-gray-100 rounded-lg p-12 flex items-center justify-center">

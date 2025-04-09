@@ -9,7 +9,7 @@ router.post('/login', adminController.login);
 
 // Protected routes (admin only)
 router.post('/upload-video', verifyToken, adminController.uploadVideo);
-router.get('/site-config', verifyToken, adminController.getSiteConfig);
+router.get('/site-config', adminController.getSiteConfig);
 router.put('/site-config', verifyToken, adminController.updateSiteConfig);
 
 // Custom pages

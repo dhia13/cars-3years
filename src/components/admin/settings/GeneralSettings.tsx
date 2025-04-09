@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Save } from 'lucide-react';
+import { Save, Facebook, Instagram, Twitter } from 'lucide-react';
 import { SiteConfigType, handleInputChange, saveSiteConfig } from './settingsUtils';
+import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
 
 interface GeneralSettingsProps {
   config: SiteConfigType;
@@ -27,6 +29,7 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({ config, onConf
     setIsSaving(true);
     
     try {
+      console.log("Saving config:", config);
       const success = await saveSiteConfig(config);
       
       if (success) {
@@ -43,6 +46,7 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({ config, onConf
         description: "Impossible de sauvegarder les modifications",
         variant: "destructive",
       });
+      console.error("Error saving config:", error);
     } finally {
       setIsSaving(false);
     }
@@ -74,27 +78,39 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({ config, onConf
           <div className="grid gap-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="facebook">Facebook</Label>
+                <Label htmlFor="facebook" className="flex items-center">
+                  <Facebook className="h-4 w-4 mr-2" />
+                  Facebook
+                </Label>
                 <Input
                   id="facebook"
+                  name="socialMedia.facebook"
                   value={config.socialMedia?.facebook || ''}
                   onChange={(e) => handleChange(e, 'socialMedia', 'facebook')}
                   placeholder="URL Facebook"
                 />
               </div>
               <div>
-                <Label htmlFor="instagram">Instagram</Label>
+                <Label htmlFor="instagram" className="flex items-center">
+                  <Instagram className="h-4 w-4 mr-2" />
+                  Instagram
+                </Label>
                 <Input
                   id="instagram"
+                  name="socialMedia.instagram"
                   value={config.socialMedia?.instagram || ''}
                   onChange={(e) => handleChange(e, 'socialMedia', 'instagram')}
                   placeholder="URL Instagram"
                 />
               </div>
               <div>
-                <Label htmlFor="twitter">Twitter</Label>
+                <Label htmlFor="twitter" className="flex items-center">
+                  <Twitter className="h-4 w-4 mr-2" />
+                  Twitter
+                </Label>
                 <Input
                   id="twitter"
+                  name="socialMedia.twitter"
                   value={config.socialMedia?.twitter || ''}
                   onChange={(e) => handleChange(e, 'socialMedia', 'twitter')}
                   placeholder="URL Twitter"

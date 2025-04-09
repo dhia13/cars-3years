@@ -7,7 +7,7 @@ import { ContactSettings } from './settings/ContactSettings';
 import { VideoSettings } from './settings/VideoSettings';
 import { SEOSettings } from './settings/SEOSettings';
 import { PagesSettings } from './settings/PagesSettings';
-import { adminApi } from '@/services/api';
+import { configApi } from '@/services/api';
 import { SiteConfigType } from './settings/settingsUtils';
 import { Loader2 } from 'lucide-react';
 
@@ -44,9 +44,10 @@ const SiteSettings = () => {
       try {
         setIsLoading(true);
         console.log('Fetching site configuration...');
-        const data = await adminApi.getSiteConfig();
+        const data = await configApi.getConfig();
         
         if (data.error) {
+          console.error('Error data received:', data);
           throw new Error(data.message || 'Erreur lors de la récupération de la configuration');
         }
         

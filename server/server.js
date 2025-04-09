@@ -29,8 +29,7 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOptions));
-app.use(bodyParser.json());
+app.use(cors(corsOptions)); app.use(bodyParser.json());
 app.use(express.static('uploads'));
 
 // Connect to MongoDB
@@ -704,7 +703,7 @@ app.delete('/api/contact/:id', verifyToken, contactController.deleteContact);
 // Admin Routes
 app.post('/api/admin/login', adminController.login);
 app.post('/api/admin/upload-video', verifyToken, adminController.uploadVideo);
-app.get('/api/admin/site-config', verifyToken, adminController.getSiteConfig);
+app.get('/api/admin/site-config', adminController.getSiteConfig);
 app.put('/api/admin/site-config', verifyToken, adminController.updateSiteConfig);
 
 // Visitor Routes

@@ -73,5 +73,19 @@ export const mediaApi = {
       console.error(`Error deleting media ${mediaId}:`, error);
       return handleApiError(error);
     }
+  },
+  
+  // Get media by ID
+  getById: async (mediaId: string) => {
+    try {
+      console.log('Fetching media by ID:', mediaId);
+      const response = await fetch(`${API_BASE_URL}/media/${mediaId}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleResponse(response);
+    } catch (error) {
+      console.error(`Error fetching media ${mediaId}:`, error);
+      return handleApiError(error);
+    }
   }
 };
