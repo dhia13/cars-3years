@@ -10,7 +10,9 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: mode === 'development' 
+          ? 'http://localhost:5001'
+          : 'https://immersivedigitaldevelopment.fr',
         changeOrigin: true,
       }
     }
@@ -35,4 +37,5 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+
 

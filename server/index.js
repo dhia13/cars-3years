@@ -15,10 +15,21 @@ const mediaRoutes = require('./routes/mediaRoutes');
 const app = express();
 
 // Middleware
-// Configure CORS middleware to allow all origins
-app.use(cors({
-  origin: '*',  // This allows requests from any origin
-}));
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'https://immersivedigitaldevelopment.com',
+    'http://immersivedigitaldevelopment.com',
+    'http://localhost:8080',
+    'http://localhost:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -180,4 +191,5 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
 
