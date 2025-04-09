@@ -14,7 +14,23 @@ const nodemailer = require('nodemailer');
 const app = express();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  'http://51.38.127.33',
+  'http://immersivedigitaldevelopment.com',
+  'http://immersivedigitaldevelopment.fr',
+];
+
+// Configure CORS middleware
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests from specified origins, or allow undefined (for server-to-server requests)
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 app.use(bodyParser.json());
 app.use(express.static('uploads'));
 
@@ -23,8 +39,8 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('Could not connect to MongoDB', err));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Could not connect to MongoDB', err));
 
 // Create transporter for sending emails
 const transporter = nodemailer.createTransport({
@@ -182,25 +198,25 @@ const Visitor = mongoose.model('Visitor', visitorSchema);
 const verifyToken = (req, res, next) => {
   // Get auth header
   const authHeader = req.headers.authorization;
-  
+
   if (!authHeader) {
     return res.status(401).json({ message: 'No token provided' });
   }
-  
+
   // Check if auth header has the right format
   const parts = authHeader.split(' ');
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
     return res.status(401).json({ message: 'Token error' });
   }
-  
+
   const token = parts[1];
-  
+
   // Verify token
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).json({ message: 'Invalid token' });
     }
-    
+
     // Add user info to request
     req.user = decoded;
     next();
@@ -333,7 +349,7 @@ const vehicleController = {
       if (!vehicle) {
         return res.status(404).json({ message: 'Vehicle not found' });
       }
-      
+
       // Delete associated images
       vehicle.images.forEach(img => {
         const imagePath = path.join(__dirname, '../uploads/vehicles', path.basename(img));
@@ -341,7 +357,7 @@ const vehicleController = {
           fs.unlinkSync(imagePath);
         }
       });
-      
+
       res.status(200).json({ message: 'Vehicle deleted successfully' });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -359,19 +375,19 @@ const vehicleController = {
 
       try {
         const fileUrls = req.files.map(file => `/vehicles/${file.filename}`);
-        
+
         if (req.params.id) {
           // Update existing vehicle with new images
           const vehicle = await Vehicle.findById(req.params.id);
           if (!vehicle) {
             return res.status(404).json({ message: 'Vehicle not found' });
           }
-          
+
           vehicle.images = [...vehicle.images, ...fileUrls];
           await vehicle.save();
           return res.status(200).json(vehicle);
         }
-        
+
         // Just return the URLs if no vehicle ID provided
         res.status(200).json(fileUrls);
       } catch (error) {
@@ -397,7 +413,7 @@ const contactController = {
   submitContact: async (req, res) => {
     try {
       const { name, email, phone, message } = req.body;
-      
+
       // Create new contact
       const contact = new Contact({
         name,
@@ -405,9 +421,9 @@ const contactController = {
         phone,
         message
       });
-      
+
       await contact.save();
-      
+
       // Send email notification
       const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -424,9 +440,9 @@ const contactController = {
           <p>Ce message a été envoyé depuis le formulaire de contact sur 3ansdz.com</p>
         `
       };
-      
+
       await transporter.sendMail(mailOptions);
-      
+
       res.status(201).json({ message: 'Message envoyé avec succès' });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -464,11 +480,11 @@ const contactController = {
         { responded: true },
         { new: true }
       );
-      
+
       if (!contact) {
         return res.status(404).json({ message: 'Contact not found' });
       }
-      
+
       res.status(200).json(contact);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -494,10 +510,10 @@ const adminController = {
   // Admin login
   login: async (req, res) => {
     const { username, password } = req.body;
-    
+
     // Check credentials against environment variables
     if (
-      username === process.env.ADMIN_USERNAME && 
+      username === process.env.ADMIN_USERNAME &&
       password === process.env.ADMIN_PASSWORD
     ) {
       // Generate JWT token
@@ -506,7 +522,7 @@ const adminController = {
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
-      
+
       res.status(200).json({
         message: 'Login successful',
         token
@@ -528,17 +544,17 @@ const adminController = {
       try {
         // Save video URL to site config
         let siteConfig = await SiteConfig.findOne();
-        
+
         if (!siteConfig) {
           siteConfig = new SiteConfig();
         }
-        
+
         siteConfig.videoUrl = `/videos/${req.file.filename}`;
         await siteConfig.save();
-        
-        res.status(200).json({ 
+
+        res.status(200).json({
           message: 'Video uploaded successfully',
-          videoUrl: siteConfig.videoUrl 
+          videoUrl: siteConfig.videoUrl
         });
       } catch (error) {
         res.status(500).json({ message: error.message });
@@ -550,12 +566,12 @@ const adminController = {
   getSiteConfig: async (req, res) => {
     try {
       let siteConfig = await SiteConfig.findOne();
-      
+
       if (!siteConfig) {
         siteConfig = new SiteConfig();
         await siteConfig.save();
       }
-      
+
       res.status(200).json(siteConfig);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -566,19 +582,19 @@ const adminController = {
   updateSiteConfig: async (req, res) => {
     try {
       let siteConfig = await SiteConfig.findOne();
-      
+
       if (!siteConfig) {
         siteConfig = new SiteConfig();
       }
-      
+
       // Update fields
       if (req.body.homeHeroText) siteConfig.homeHeroText = req.body.homeHeroText;
       if (req.body.contactInfo) siteConfig.contactInfo = req.body.contactInfo;
       if (req.body.socialMedia) siteConfig.socialMedia = req.body.socialMedia;
-      
+
       siteConfig.lastUpdated = Date.now();
       await siteConfig.save();
-      
+
       res.status(200).json(siteConfig);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -592,15 +608,15 @@ const visitorController = {
   recordVisit: async (req, res) => {
     try {
       const { page } = req.body;
-      
+
       const visitor = new Visitor({
         ip: req.ip,
         userAgent: req.headers['user-agent'],
         page
       });
-      
+
       await visitor.save();
-      
+
       // Send email notification for important pages
       if (page === '/contact' || page === '/vehicules' || page.startsWith('/vehicules/')) {
         const mailOptions = {
@@ -617,10 +633,10 @@ const visitorController = {
             <p>Cette notification a été envoyée automatiquement depuis 3ansdz.com</p>
           `
         };
-        
+
         await transporter.sendMail(mailOptions);
       }
-      
+
       res.status(201).json({ message: 'Visit recorded' });
     } catch (error) {
       // Don't return error to client, just log it
@@ -634,28 +650,28 @@ const visitorController = {
     try {
       // Get total visitors
       const totalVisitors = await Visitor.countDocuments();
-      
+
       // Get visitors in the last 24 hours
       const last24Hours = new Date();
       last24Hours.setHours(last24Hours.getHours() - 24);
       const visitorsLast24Hours = await Visitor.countDocuments({
         timestamp: { $gte: last24Hours }
       });
-      
+
       // Get visitors in the last 7 days
       const last7Days = new Date();
       last7Days.setDate(last7Days.getDate() - 7);
       const visitorsLast7Days = await Visitor.countDocuments({
         timestamp: { $gte: last7Days }
       });
-      
+
       // Get most visited pages
       const mostVisitedPages = await Visitor.aggregate([
         { $group: { _id: '$page', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 10 }
       ]);
-      
+
       res.status(200).json({
         totalVisitors,
         visitorsLast24Hours,

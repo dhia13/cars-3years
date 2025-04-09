@@ -15,7 +15,23 @@ const mediaRoutes = require('./routes/mediaRoutes');
 const app = express();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  'http://51.38.127.33',
+  'http://immersivedigitaldevelopment.com',
+  'http://immersivedigitaldevelopment.fr',
+];
+
+// Configure CORS middleware
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests from specified origins, or allow undefined (for server-to-server requests)
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
@@ -78,15 +94,15 @@ app.get('/', (req, res) => {
 // Debug routes
 app.get('/api/check-uploads', (req, res) => {
   const vehiclesDir = path.join(__dirname, 'uploads/vehicles');
-  
+
   if (!fs.existsSync(vehiclesDir)) {
     return res.json({ exists: false, message: 'Vehicles directory does not exist' });
   }
-  
+
   try {
     const files = fs.readdirSync(vehiclesDir);
-    res.json({ 
-      exists: true, 
+    res.json({
+      exists: true,
       fileCount: files.length,
       files: files.slice(0, 20), // Return first 20 files to avoid overwhelming response
       path: vehiclesDir
@@ -98,15 +114,15 @@ app.get('/api/check-uploads', (req, res) => {
 
 app.get('/api/check-media', (req, res) => {
   const mediaDir = path.join(__dirname, 'uploads/media');
-  
+
   if (!fs.existsSync(mediaDir)) {
     return res.json({ exists: false, message: 'Media directory does not exist' });
   }
-  
+
   try {
     const files = fs.readdirSync(mediaDir);
-    res.json({ 
-      exists: true, 
+    res.json({
+      exists: true,
       fileCount: files.length,
       files: files.slice(0, 20), // Return first 20 files to avoid overwhelming response
       path: mediaDir
@@ -139,9 +155,9 @@ app.use((req, res, next) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
-  res.status(500).json({ 
-    message: 'Internal server error', 
-    error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message 
+  res.status(500).json({
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'production' ? 'An error occurred' : err.message
   });
 });
 
