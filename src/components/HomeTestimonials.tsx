@@ -1,13 +1,13 @@
 
-import { Star } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import { Star } from "lucide-react";
 
 const testimonials = [
   {
     id: 1,
     name: "Ahmed B.",
     role: "Entrepreneur",
-    content: "J'ai fait appel à -3ans DZ pour l'achat et l'exportation d'une Mercedes Classe E. Le service était impeccable, transparent et professionnel. Je recommande vivement!",
+    content: "J'ai fait appel à DzAuto pour l'achat et l'exportation d'une Mercedes Classe E. Le service était impeccable, transparent et professionnel. Je recommande vivement!",
     rating: 5
   },
   {
@@ -21,7 +21,7 @@ const testimonials = [
     id: 3,
     name: "Karim L.",
     role: "Directeur Commercial",
-    content: "Excellente expérience avec -3ans DZ. Des conseillers compétents, des délais respectés et un véhicule conforme à la description. Je n'hésiterai pas à faire appel à leurs services à nouveau.",
+    content: "Excellente expérience avec DzAuto. Des conseillers compétents, des délais respectés et un véhicule conforme à la description. Je n'hésiterai pas à faire appel à leurs services à nouveau.",
     rating: 4
   }
 ];
@@ -41,12 +41,12 @@ const HomeTestimonials = () => {
             </p>
           </div>
         </ScrollReveal>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
-            <ScrollReveal 
-              key={testimonial.id} 
-              delay={index * 150} 
+            <ScrollReveal
+              key={testimonial.id}
+              delay={index * 150}
               direction="up"
               distance={40}
               duration={800}
@@ -57,11 +57,10 @@ const HomeTestimonials = () => {
                     <Star
                       key={i}
                       size={20}
-                      className={`${
-                        i < testimonial.rating
+                      className={`${i < testimonial.rating
                           ? 'text-yellow-500 fill-yellow-500'
                           : 'text-gray-600'
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>

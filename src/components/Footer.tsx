@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
   return (
     <footer className="bg-mercedes-black text-white pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -16,7 +16,7 @@ const Footer = () => {
                   <div className="text-white font-serif text-xl font-bold">3</div>
                 </div>
               </div>
-              <span className="text-white font-serif text-xl font-bold">-3ans DZ</span>
+              <span className="text-white font-serif text-xl font-bold">DzAuto</span>
             </div>
             <p className="text-gray-400 mb-4">
               Spécialiste de l'exportation de véhicules premium de l'Europe vers l'Algérie.
@@ -34,7 +34,7 @@ const Footer = () => {
               </a>
             </div>
           </div>
-          
+
           <div>
             <h3 className="font-serif text-lg font-semibold mb-4">Liens Rapides</h3>
             <ul className="space-y-2">
@@ -55,7 +55,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-serif text-lg font-semibold mb-4">Contact</h3>
             <address className="not-italic text-gray-400">
@@ -66,10 +66,10 @@ const Footer = () => {
             </address>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-800 pt-8">
           <p className="text-center text-gray-500 text-sm">
-            &copy; {currentYear} -3ans DZ. Tous droits réservés.
+            &copy; {currentYear} DzAuto. Tous droits réservés.
           </p>
         </div>
       </div>

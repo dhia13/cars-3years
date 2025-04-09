@@ -1,7 +1,7 @@
 
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,33 +46,32 @@ const Navbar = () => {
               <div className="text-white font-serif text-xl font-bold">3</div>
             </div>
           </div>
-          <span className="text-white font-serif text-xl font-bold">-3ans DZ</span>
+          <span className="text-white font-serif text-xl font-bold">DzAuto</span>
         </Link>
-        
+
         <div className="hidden md:flex space-x-8">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`text-sm uppercase tracking-wider transition-all duration-300 ${
-                isActive(item.path)
+              className={`text-sm uppercase tracking-wider transition-all duration-300 ${isActive(item.path)
                   ? 'text-mercedes-blue font-medium'
                   : 'text-white hover:text-mercedes-blue'
-              }`}
+                }`}
             >
               {item.name}
             </Link>
           ))}
         </div>
-        
-        <button 
+
+        <button
           className="md:hidden text-white"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
-      
+
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-mercedes-black/95 backdrop-blur-md animate-fade-in">
@@ -81,11 +80,10 @@ const Navbar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm uppercase tracking-wider transition-all px-2 py-3 duration-300 ${
-                  isActive(item.path)
+                className={`text-sm uppercase tracking-wider transition-all px-2 py-3 duration-300 ${isActive(item.path)
                     ? 'text-mercedes-blue font-medium border-l-2 border-mercedes-blue pl-4'
                     : 'text-white hover:text-mercedes-blue hover:border-l-2 hover:border-mercedes-blue hover:pl-4'
-                }`}
+                  }`}
               >
                 {item.name}
               </Link>

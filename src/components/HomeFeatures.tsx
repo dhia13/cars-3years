@@ -1,6 +1,6 @@
 
-import { ShieldCheck, Truck, UserCheck } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
+import { ShieldCheck, Truck, UserCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const features = [
@@ -42,21 +42,21 @@ const HomeFeatures = () => {
             </h2>
             <div className="w-24 h-1 bg-mercedes-blue mx-auto mb-6"></div>
             <p className="text-gray-600 text-lg">
-              -3ans DZ vous accompagne dans l'acquisition et l'exportation de véhicules haut de gamme de l'Europe vers l'Algérie.
+              DzAuto vous accompagne dans l'acquisition et l'exportation de véhicules haut de gamme de l'Europe vers l'Algérie.
             </p>
           </div>
         </ScrollReveal>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {features.map((feature, index) => (
-            <ScrollReveal 
-              key={feature.title} 
-              delay={index * 150} 
+            <ScrollReveal
+              key={feature.title}
+              delay={index * 150}
               direction="up"
               distance={40}
               duration={800}
             >
-              <div 
+              <div
                 className={`bg-white p-8 shadow-2xl hover:shadow-2xl transition-all duration-500 text-center rounded-sm border-t-4 ${index === activeIndex ? 'border-mercedes-darkblue scale-105' : 'border-mercedes-blue'} hover:scale-105 hover:border-mercedes-darkblue`}
               >
                 <div className="relative">
@@ -67,7 +67,7 @@ const HomeFeatures = () => {
                 </div>
                 <h3 className="text-2xl font-serif font-bold mb-4 text-mercedes-black">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
-                
+
                 <div className="mt-6 h-1 w-0 bg-mercedes-blue mx-auto transition-all duration-700 group-hover:w-full"></div>
               </div>
             </ScrollReveal>
