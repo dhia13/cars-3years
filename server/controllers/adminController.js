@@ -103,7 +103,9 @@ exports.uploadVideo = (req, res) => {
       console.log('Video uploaded to Cloudinary:', cloudinaryResult);
       
       // Delete local file after upload
-      fs.unlinkSync(filePath);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
       
       // Update site config with new video URL
       let siteConfig = await SiteConfig.findOne();
@@ -155,6 +157,12 @@ exports.getSiteConfig = async (req, res) => {
           instagram: 'https://instagram.com',
           twitter: 'https://twitter.com'
         },
+        videoUrl: '',
+        seo: {
+          title: '3ansdz - Vente de véhicules',
+          description: 'Découvrez notre sélection de véhicules de qualité',
+          keywords: 'voiture, automobile, vente, occasion, neuf',
+        },
         customPages: {
           about: {
             title: 'À Propos',
@@ -195,8 +203,12 @@ exports.updateSiteConfig = async (req, res) => {
     // Update nested objects
     ['contactInfo', 'socialMedia', 'seo'].forEach(section => {
       if (configData[section]) {
+        if (!siteConfig[section]) {
+          siteConfig[section] = {};
+        }
+        
         siteConfig[section] = {
-          ...siteConfig[section] || {},
+          ...siteConfig[section], 
           ...configData[section]
         };
       }
@@ -208,9 +220,9 @@ exports.updateSiteConfig = async (req, res) => {
         siteConfig.customPages = new Map();
       }
       
-      for (const [key, value] of Object.entries(configData.customPages)) {
+      Object.entries(configData.customPages).forEach(([key, value]) => {
         siteConfig.customPages.set(key, value);
-      }
+      });
     }
     
     siteConfig.lastUpdated = Date.now();

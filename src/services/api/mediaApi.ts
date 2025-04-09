@@ -34,21 +34,20 @@ export const mediaApi = {
   upload: async (file: File) => {
     try {
       console.log('Uploading media file:', file.name, 'Size:', file.size);
-      const token = localStorage.getItem('adminToken');
+      const headers = getAuthHeaders();
       
-      if (!token) {
-        return { error: true, message: 'Authentication required' };
-      }
+      // Supprimer Content-Type pour FormData
+      delete headers['Content-Type'];
       
       const formData = new FormData();
       formData.append('media', file);
       
       console.log('Upload endpoint:', `${API_BASE_URL}/media/upload`);
+      console.log('Upload headers:', headers);
+      
       const response = await fetch(`${API_BASE_URL}/media/upload`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: headers,
         body: formData,
       });
       

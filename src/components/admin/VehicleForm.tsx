@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -9,8 +10,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Upload, X, Plus, ArrowLeft } from 'lucide-react';
-import { API_BASE_URL } from '@/services/api';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Upload, X, Plus, ArrowLeft, Loader2, AlertTriangle } from 'lucide-react';
+import { vehiclesApi } from '@/services/api';
+import { API_BASE_URL } from '@/services/api/apiUtils';
 
 interface VehicleFormProps {
   mode?: 'create' | 'edit';
@@ -85,6 +88,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
   const [isLoading, setIsLoading] = useState(mode === 'edit');
   const [isSaving, setIsSaving] = useState(false);
   const [newFeature, setNewFeature] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -92,15 +96,19 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
     if (mode === 'edit' && id) {
       const fetchVehicle = async () => {
         try {
-          const response = await fetch(`${API_BASE_URL}/vehicles/${id}`);
+          setError(null);
+          console.log(`Fetching vehicle with ID: ${id}`);
+          const data = await vehiclesApi.getById(id);
           
-          if (!response.ok) {
-            throw new Error('Erreur lors de la récupération du véhicule');
+          if (data.error) {
+            throw new Error(data.message || 'Erreur lors de la récupération du véhicule');
           }
           
-          const data = await response.json();
+          console.log('Vehicle data received:', data);
           setVehicle(data);
         } catch (error) {
+          console.error('Error fetching vehicle:', error);
+          setError('Impossible de récupérer les détails du véhicule');
           toast({
             title: "Erreur",
             description: "Impossible de récupérer les détails du véhicule",
@@ -172,42 +180,35 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     
-    const formData = new FormData();
-    for (let i = 0; i < e.target.files.length; i++) {
-      formData.append('images', e.target.files[i]);
-    }
+    const selectedFiles = Array.from(e.target.files);
+    console.log(`Selected ${selectedFiles.length} files for upload:`, selectedFiles.map(f => f.name));
     
     setUploadLoading(true);
+    setError(null);
     
     try {
-      const token = localStorage.getItem('adminToken');
-      const endpoint = id 
-        ? `${API_BASE_URL}/vehicles/upload/${id}` 
-        : `${API_BASE_URL}/vehicles/upload`;
-        
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const result = await vehiclesApi.uploadImages(id || null, selectedFiles);
       
-      if (!response.ok) {
-        throw new Error('Erreur lors du téléchargement des images');
+      if (result.error) {
+        throw new Error(result.message || 'Erreur lors du téléchargement des images');
       }
       
-      const data = await response.json();
+      console.log('Image upload result:', result);
       
-      if (id && data.images) {
+      if (result.images) {
         setVehicle(prev => ({
           ...prev,
-          images: data.images
+          images: Array.isArray(result.images) ? result.images : prev.images
         }));
-      } else {
+      } else if (Array.isArray(result)) {
         setVehicle(prev => ({
           ...prev,
-          images: [...prev.images, ...(Array.isArray(data) ? data : [data.url])]
+          images: [...prev.images, ...result]
+        }));
+      } else if (result.url) {
+        setVehicle(prev => ({
+          ...prev,
+          images: [...prev.images, result.url]
         }));
       }
       
@@ -216,9 +217,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
         description: "Images téléchargées avec succès",
       });
     } catch (error) {
+      console.error('Error uploading images:', error);
+      setError('Impossible de télécharger les images');
       toast({
         title: "Erreur",
-        description: "Impossible de télécharger les images",
+        description: "Impossible de télécharger les images: " + (error instanceof Error ? error.message : "erreur inconnue"),
         variant: "destructive",
       });
     } finally {
@@ -237,26 +240,23 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    setError(null);
     
     try {
-      const token = localStorage.getItem('adminToken');
-      const method = mode === 'edit' ? 'PUT' : 'POST';
-      const endpoint = mode === 'edit' 
-        ? `${API_BASE_URL}/vehicles/${id}` 
-        : `${API_BASE_URL}/vehicles`;
-        
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(vehicle),
-      });
+      console.log('Submitting vehicle data:', vehicle);
       
-      if (!response.ok) {
-        throw new Error(`Erreur lors de l'${mode === 'edit' ? 'édition' : 'ajout'} du véhicule`);
+      let result;
+      if (mode === 'edit' && id) {
+        result = await vehiclesApi.update(id, vehicle);
+      } else {
+        result = await vehiclesApi.create(vehicle);
       }
+      
+      if (result.error) {
+        throw new Error(result.message || `Erreur lors de l'${mode === 'edit' ? 'édition' : 'ajout'} du véhicule`);
+      }
+      
+      console.log('Save vehicle result:', result);
       
       toast({
         title: "Succès",
@@ -265,9 +265,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
       
       navigate('/admin/vehicles');
     } catch (error) {
+      console.error('Error saving vehicle:', error);
+      setError(`Impossible de ${mode === 'edit' ? 'modifier' : 'ajouter'} le véhicule`);
       toast({
         title: "Erreur",
-        description: `Impossible de ${mode === 'edit' ? 'modifier' : 'ajouter'} le véhicule`,
+        description: `Impossible de ${mode === 'edit' ? 'modifier' : 'ajouter'} le véhicule: ` + 
+          (error instanceof Error ? error.message : "erreur inconnue"),
         variant: "destructive",
       });
     } finally {
@@ -276,7 +279,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
   };
 
   if (isLoading) {
-    return <div className="text-center py-4">Chargement...</div>;
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="animate-spin h-8 w-8 text-primary mr-2" />
+        <span>Chargement des données du véhicule...</span>
+      </div>
+    );
   }
 
   return (
@@ -290,6 +298,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
           {mode === 'edit' ? 'Modifier le véhicule' : 'Ajouter un véhicule'}
         </h1>
       </div>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Erreur</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <Tabs defaultValue="general">
@@ -535,10 +551,22 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
               />
               <Button asChild disabled={uploadLoading}>
                 <label htmlFor="images-upload">
-                  <Upload className="mr-2 h-4 w-4" />
-                  {uploadLoading ? 'Téléchargement...' : 'Télécharger des images'}
+                  {uploadLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Téléchargement en cours...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Télécharger des images
+                    </>
+                  )}
                 </label>
               </Button>
+              <p className="text-sm text-muted-foreground mt-1">
+                Vous pouvez sélectionner plusieurs images à la fois. Types de fichiers acceptés: JPG, PNG, WebP.
+              </p>
             </div>
             
             {vehicle.images.length === 0 ? (
@@ -556,6 +584,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
                         src={image.startsWith('http') ? image : `${API_BASE_URL}${image}`}
                         alt={`Vehicle ${index + 1}`}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error('Vehicle image failed to load:', image);
+                          const target = e.target as HTMLImageElement;
+                          target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+                          target.className = 'w-full h-full object-contain p-4 opacity-50';
+                        }}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <Button
@@ -580,8 +614,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ mode = 'create' }) => {
           </Button>
           <Button type="submit" disabled={isSaving}>
             {isSaving 
-              ? 'Enregistrement...' 
-              : mode === 'edit' 
+              ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Enregistrement...
+                </>
+              ) : mode === 'edit' 
                 ? 'Mettre à jour le véhicule' 
                 : 'Ajouter le véhicule'}
           </Button>

@@ -1,22 +1,23 @@
 
-import Footer from "@/components/Footer";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import ScrollReveal from "@/components/ScrollReveal";
-import { Badge } from "@/components/ui/badge";
+import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Car, Euro, Fuel, Gauge, Info, Share2, ShieldCheck } from "lucide-react";
+import ScrollReveal from "@/components/ScrollReveal";
 import { useToast } from "@/hooks/use-toast";
 import { vehiclesApi } from "@/services/api";
-import { Calendar, Car, Euro, Info, Share2, ShieldCheck } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 
 interface VehicleSpecs {
   engine: string;
@@ -48,26 +49,26 @@ const VehicleDetailsPage = () => {
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-
+  
   useEffect(() => {
     window.scrollTo(0, 0);
-
+    
     if (!id) {
       setError("ID de véhicule manquant");
       setIsLoading(false);
       return;
     }
-
+    
     const fetchVehicleDetails = async () => {
       try {
         setIsLoading(true);
         const data = await vehiclesApi.getById(id);
         console.log('Vehicle details:', data);
-
+        
         if (!data || data.error) {
           throw new Error(data?.message || "Erreur lors du chargement du véhicule");
         }
-
+        
         setVehicle(data);
       } catch (error) {
         console.error('Error fetching vehicle details:', error);
@@ -76,17 +77,17 @@ const VehicleDetailsPage = () => {
         setIsLoading(false);
       }
     };
-
+    
     fetchVehicleDetails();
   }, [id]);
-
+  
   // Helper to get API URL for images
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '/placeholder.svg';
     if (imagePath.startsWith('http')) return imagePath;
-    return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${imagePath}`;
+    return `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}${imagePath}`;
   };
-
+  
   if (isLoading) {
     return (
       <>
@@ -107,7 +108,7 @@ const VehicleDetailsPage = () => {
         <div className="container mx-auto px-4 py-32 text-center">
           <h1 className="text-3xl font-bold">Véhicule non trouvé</h1>
           <p className="mt-4">{error || "Le véhicule que vous recherchez n'existe pas."}</p>
-          <Button
+          <Button 
             className="mt-8 bg-mercedes-blue"
             onClick={() => navigate('/vehicules')}
           >
@@ -131,7 +132,7 @@ const VehicleDetailsPage = () => {
         return "bg-green-500 hover:bg-green-600";
     }
   };
-
+  
   const getAvailabilityText = (status: string) => {
     switch (status) {
       case 'available':
@@ -144,7 +145,7 @@ const VehicleDetailsPage = () => {
         return status;
     }
   };
-
+  
   const handleReserve = () => {
     navigate(`/contact?vehicule=${vehicle._id}&titre=${encodeURIComponent(vehicle.title)}`);
   };
@@ -172,7 +173,7 @@ const VehicleDetailsPage = () => {
   return (
     <>
       <Navbar />
-
+      
       <main className="pb-16">
         <section className="pt-24 pb-16 bg-gradient-to-b from-mercedes-black to-mercedes-darkgray text-white">
           <div className="container mx-auto px-4">
@@ -199,7 +200,7 @@ const VehicleDetailsPage = () => {
             </ScrollReveal>
           </div>
         </section>
-
+        
         <section className="py-8 bg-white">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row gap-8">
@@ -207,9 +208,9 @@ const VehicleDetailsPage = () => {
                 <ScrollReveal>
                   {vehicle.images && vehicle.images.length > 0 ? (
                     <div className="bg-gray-100 rounded-lg overflow-hidden">
-                      <img
-                        src={getImageUrl(vehicle.images[0])}
-                        alt={`${vehicle.make} ${vehicle.model}`}
+                      <img 
+                        src={getImageUrl(vehicle.images[0])} 
+                        alt={`${vehicle.make} ${vehicle.model}`} 
                         className="w-full h-auto object-cover"
                       />
                     </div>
@@ -218,14 +219,14 @@ const VehicleDetailsPage = () => {
                       <Car className="w-24 h-24 text-gray-300" />
                     </div>
                   )}
-
+                  
                   <div className="mt-8">
                     <h2 className="text-2xl font-serif font-bold mb-4">Description</h2>
                     <p className="text-gray-700 leading-relaxed">
                       {vehicle.description}
                     </p>
                   </div>
-
+                  
                   {vehicle.features && vehicle.features.length > 0 && (
                     <div className="mt-8">
                       <h2 className="text-2xl font-serif font-bold mb-4">Caractéristiques principales</h2>
@@ -241,7 +242,7 @@ const VehicleDetailsPage = () => {
                   )}
                 </ScrollReveal>
               </div>
-
+              
               <div className="lg:w-2/5">
                 <ScrollReveal delay={100}>
                   <Card className="shadow-lg">
@@ -284,26 +285,26 @@ const VehicleDetailsPage = () => {
                             <span className="font-medium">{vehicle.specifications?.color || 'Non spécifié'}</span>
                           </div>
                         </div>
-
+                        
                         <Separator />
-
+                        
                         <div className="flex flex-col">
                           <span className="text-sm text-gray-500">Prix</span>
                           <span className="text-2xl font-bold text-mercedes-blue">{vehicle.price} €</span>
                         </div>
-
+                        
                         <div className="flex flex-col gap-3">
                           {vehicle.status !== 'sold' && (
-                            <Button
+                            <Button 
                               className="w-full bg-mercedes-blue hover:bg-mercedes-darkblue text-white"
                               onClick={handleReserve}
                             >
                               Demander plus d'informations
                             </Button>
                           )}
-
-                          <Button
-                            variant="outline"
+                          
+                          <Button 
+                            variant="outline" 
                             className="w-full"
                             onClick={handleShare}
                           >
@@ -326,7 +327,7 @@ const VehicleDetailsPage = () => {
           </div>
         </section>
       </main>
-
+      
       <Footer />
     </>
   );

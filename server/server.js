@@ -14,23 +14,22 @@ const nodemailer = require('nodemailer');
 const app = express();
 
 // Middleware
-const allowedOrigins = [
-  'http://51.38.127.33',
-  'http://immersivedigitaldevelopment.com',
-  'http://immersivedigitaldevelopment.fr',
-];
+// Middleware
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'https://immersivedigitaldevelopment.com',
+    'http://immersivedigitaldevelopment.com',
+    'http://localhost:8080',
+    'http://localhost:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-// Configure CORS middleware
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests from specified origins, or allow undefined (for server-to-server requests)
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static('uploads'));
 

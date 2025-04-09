@@ -9,6 +9,7 @@ import { SEOSettings } from './settings/SEOSettings';
 import { PagesSettings } from './settings/PagesSettings';
 import { adminApi } from '@/services/api';
 import { SiteConfigType } from './settings/settingsUtils';
+import { Loader2 } from 'lucide-react';
 
 const defaultConfig: SiteConfigType = {
   homeHeroText: '',
@@ -28,6 +29,7 @@ const defaultConfig: SiteConfigType = {
     title: '',
     description: '',
     keywords: '',
+    ogImage: '',
   },
   customPages: {},
 };
@@ -43,6 +45,11 @@ const SiteSettings = () => {
         setIsLoading(true);
         console.log('Fetching site configuration...');
         const data = await adminApi.getSiteConfig();
+        
+        if (data.error) {
+          throw new Error(data.message || 'Erreur lors de la récupération de la configuration');
+        }
+        
         console.log('Received site configuration:', data);
         
         // Ensure all required properties exist
@@ -91,7 +98,11 @@ const SiteSettings = () => {
   };
 
   if (isLoading) {
-    return <div className="text-center py-4">Chargement...</div>;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
@@ -107,35 +118,35 @@ const SiteSettings = () => {
           <TabsTrigger value="pages">Pages</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="general">
+        <TabsContent value="general" className="mt-4">
           <GeneralSettings 
             config={config} 
             onConfigUpdate={handleConfigUpdate} 
           />
         </TabsContent>
         
-        <TabsContent value="contact">
+        <TabsContent value="contact" className="mt-4">
           <ContactSettings 
             config={config} 
             onConfigUpdate={handleConfigUpdate} 
           />
         </TabsContent>
         
-        <TabsContent value="video">
+        <TabsContent value="video" className="mt-4">
           <VideoSettings 
             config={config} 
             onConfigUpdate={handleConfigUpdate} 
           />
         </TabsContent>
 
-        <TabsContent value="seo">
+        <TabsContent value="seo" className="mt-4">
           <SEOSettings 
             config={config} 
             onConfigUpdate={handleConfigUpdate} 
           />
         </TabsContent>
 
-        <TabsContent value="pages">
+        <TabsContent value="pages" className="mt-4">
           <PagesSettings 
             config={config} 
             onConfigUpdate={handleConfigUpdate} 

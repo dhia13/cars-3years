@@ -1,5 +1,5 @@
 
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { adminApi } from '@/services/api';
 
 export interface SiteConfigType {
@@ -40,6 +40,8 @@ export const saveSiteConfig = async (config: SiteConfigType): Promise<boolean> =
     
     console.log('Site config saved successfully:', result);
     
+    // Import toast directement plutôt que d'utiliser useToast() dans une fonction non-composant
+    const { toast } = require('@/hooks/use-toast');
     toast({
       title: "Configuration sauvegardée",
       description: "Les modifications ont été enregistrées avec succès.",
@@ -48,6 +50,7 @@ export const saveSiteConfig = async (config: SiteConfigType): Promise<boolean> =
     return true;
   } catch (error) {
     console.error('Error saving site config:', error);
+    const { toast } = require('@/hooks/use-toast');
     toast({
       title: "Erreur",
       description: "Impossible de sauvegarder la configuration: " + (error instanceof Error ? error.message : "erreur inconnue"),
@@ -67,6 +70,7 @@ export const uploadVideo = async (videoFile: File): Promise<string | null> => {
     }
     
     console.log('Video uploaded successfully:', result);
+    const { toast } = require('@/hooks/use-toast');
     toast({
       title: "Vidéo uploadée",
       description: "La vidéo a été téléchargée avec succès.",
@@ -74,6 +78,7 @@ export const uploadVideo = async (videoFile: File): Promise<string | null> => {
     return result.videoUrl;
   } catch (error) {
     console.error('Error uploading video:', error);
+    const { toast } = require('@/hooks/use-toast');
     toast({
       title: "Erreur",
       description: "Impossible de télécharger la vidéo: " + (error instanceof Error ? error.message : "erreur inconnue"),
@@ -97,6 +102,7 @@ export const saveCustomPage = async (
     
     console.log('Custom page saved successfully:', result);
     
+    const { toast } = require('@/hooks/use-toast');
     toast({
       title: "Page sauvegardée",
       description: "La page a été enregistrée avec succès.",
@@ -105,6 +111,7 @@ export const saveCustomPage = async (
     return true;
   } catch (error) {
     console.error('Error saving custom page:', error);
+    const { toast } = require('@/hooks/use-toast');
     toast({
       title: "Erreur",
       description: "Impossible de sauvegarder la page: " + (error instanceof Error ? error.message : "erreur inconnue"),

@@ -44,7 +44,10 @@ export const vehiclesApi = {
       console.log('Creating vehicle:', vehicleData);
       const response = await fetch(`${API_BASE_URL}/vehicles`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(vehicleData),
       });
       return handleResponse(response);
@@ -60,7 +63,10 @@ export const vehiclesApi = {
       console.log('Updating vehicle:', id, vehicleData);
       const response = await fetch(`${API_BASE_URL}/vehicles/${id}`, {
         method: 'PUT',
-        headers: getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(vehicleData),
       });
       return handleResponse(response);
@@ -89,11 +95,10 @@ export const vehiclesApi = {
   uploadImages: async (id: string | null, images: File[]) => {
     try {
       console.log('Uploading images for vehicle:', id, 'Number of images:', images.length);
-      const token = localStorage.getItem('adminToken');
+      const headers = getAuthHeaders();
       
-      if (!token) {
-        return { error: true, message: 'Authentication required' };
-      }
+      // Supprimez le Content-Type du header car FormData le définira automatiquement avec le bon boundary
+      delete headers['Content-Type'];
       
       const formData = new FormData();
       
@@ -107,11 +112,11 @@ export const vehiclesApi = {
         : `${API_BASE_URL}/vehicles/upload`;
       
       console.log('Upload endpoint:', endpoint);
+      console.log('Upload headers:', headers);
+      
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: headers,
         body: formData,
       });
       

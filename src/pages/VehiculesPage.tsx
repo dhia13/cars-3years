@@ -1,16 +1,17 @@
 
-import Footer from "@/components/Footer";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import VehicleCard from "@/components/VehicleCard";
 import ScrollReveal from "@/components/ScrollReveal";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
-import VehicleCard from "@/components/VehicleCard";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Filter, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import { vehiclesApi } from "@/services/api";
-import { AlertTriangle, ChevronDown, ChevronUp, Filter } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface Vehicle {
   _id: string;
@@ -38,7 +39,7 @@ const VehiculesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-
+  
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchVehicles();
@@ -51,7 +52,7 @@ const VehiculesPage = () => {
       const data = await vehiclesApi.getAll();
       console.log('Fetched vehicles from API:', data);
       setVehicles(data);
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Error fetching vehicles:', error);
       setError(error.message || 'Erreur lors du chargement des véhicules');
     } finally {
@@ -62,23 +63,23 @@ const VehiculesPage = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedFuelTypes, setSelectedFuelTypes] = useState<FuelType[]>([]);
   const [yearRange, setYearRange] = useState([2021, 2025]);
-
+  
   // Get unique fuel types from vehicles
   const availableFuelTypes = Array.from(
     new Set(vehicles.map(v => v.specifications?.fuelType).filter(Boolean))
   );
-
+  
   // Filter vehicles based on selected criteria
   const filteredVehicles = vehicles.filter(vehicle => {
     // Filter by fuel type if any is selected
-    const fuelTypeMatch = selectedFuelTypes.length === 0 ||
-      (vehicle.specifications?.fuelType &&
-        selectedFuelTypes.includes(vehicle.specifications.fuelType));
-
+    const fuelTypeMatch = selectedFuelTypes.length === 0 || 
+      (vehicle.specifications?.fuelType && 
+       selectedFuelTypes.includes(vehicle.specifications.fuelType));
+    
     // Filter by year range
     const vehicleYear = vehicle.year;
     const yearMatch = vehicleYear >= yearRange[0] && vehicleYear <= yearRange[1];
-
+    
     return fuelTypeMatch && yearMatch;
   });
 
@@ -86,8 +87,8 @@ const VehiculesPage = () => {
   const availableCount = filteredVehicles.filter(v => v.status === 'available').length;
 
   const toggleFuelType = (fuelType: FuelType) => {
-    setSelectedFuelTypes(prev =>
-      prev.includes(fuelType)
+    setSelectedFuelTypes(prev => 
+      prev.includes(fuelType) 
         ? prev.filter(type => type !== fuelType)
         : [...prev, fuelType]
     );
@@ -103,7 +104,6 @@ const VehiculesPage = () => {
     if (vehicles.length && yearsArray.length) {
       setYearRange([minYear, maxYear]);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vehicles]);
 
   // Map status to display text
@@ -124,13 +124,13 @@ const VehiculesPage = () => {
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '/placeholder.svg';
     if (imagePath.startsWith('http')) return imagePath;
-    return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${imagePath}`;
+    return `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}${imagePath}`;
   };
 
   return (
     <>
       <Navbar />
-
+      
       <main>
         <section className="pt-28 pb-20 bg-gradient-to-b from-mercedes-black via-mercedes-darkgray to-black text-white shadow-lg">
           <div className="container mx-auto px-4">
@@ -139,18 +139,18 @@ const VehiculesPage = () => {
                 Nos Véhicules
               </h1>
               <p className="text-white/90 max-w-3xl mx-auto text-center text-lg md:text-xl">
-                Découvrez notre sélection de véhicules disponibles pour l'exportation vers l'Algérie.
+                Découvrez notre sélection de véhicules disponibles pour l'exportation vers l'Algérie. 
                 <span className="font-bold text-mercedes-blue ml-2">{availableCount} véhicules actuellement en stock.</span>
               </p>
             </ScrollReveal>
           </div>
         </section>
-
+        
         <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
               <h2 className="text-2xl font-serif font-bold mb-4 lg:mb-0">Véhicules disponibles</h2>
-
+              
               <div className="flex flex-wrap gap-3">
                 <span className="inline-flex items-center text-sm bg-green-100 px-3 py-1 rounded-full">
                   <span className="h-3 w-3 rounded-full bg-green-500 mr-1"></span>
@@ -166,7 +166,7 @@ const VehiculesPage = () => {
                 </span>
               </div>
             </div>
-
+            
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent mb-4"></div>
@@ -180,8 +180,8 @@ const VehiculesPage = () => {
               </Alert>
             ) : (
               <>
-                <Collapsible
-                  open={filtersOpen}
+                <Collapsible 
+                  open={filtersOpen} 
                   onOpenChange={setFiltersOpen}
                   className="mb-8 border border-gray-200 rounded-lg p-4 bg-white shadow-sm"
                 >
@@ -194,7 +194,7 @@ const VehiculesPage = () => {
                       {filtersOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                     </CollapsibleTrigger>
                   </div>
-
+                  
                   <CollapsibleContent className="mt-4 space-y-6">
                     {availableFuelTypes.length > 0 && (
                       <div>
@@ -202,13 +202,13 @@ const VehiculesPage = () => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                           {availableFuelTypes.map((fuel) => (
                             <div key={fuel} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`fuel-${fuel}`}
+                              <Checkbox 
+                                id={`fuel-${fuel}`} 
                                 checked={selectedFuelTypes.includes(fuel)}
                                 onCheckedChange={() => toggleFuelType(fuel)}
                                 className="data-[state=checked]:bg-mercedes-darkblue"
                               />
-                              <label
+                              <label 
                                 htmlFor={`fuel-${fuel}`}
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
@@ -219,15 +219,15 @@ const VehiculesPage = () => {
                         </div>
                       </div>
                     )}
-
+                    
                     <div>
                       <h4 className="font-medium mb-3">Année du véhicule</h4>
                       <div className="px-2">
-                        <Slider
+                        <Slider 
                           value={yearRange}
-                          min={minYear}
-                          max={maxYear}
-                          step={1}
+                          min={minYear} 
+                          max={maxYear} 
+                          step={1} 
                           onValueChange={(value) => setYearRange(value as [number, number])}
                           className="mb-6"
                         />
@@ -239,9 +239,9 @@ const VehiculesPage = () => {
                     </div>
                   </CollapsibleContent>
                 </Collapsible>
-
+                
                 <Separator className="mb-8" />
-
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredVehicles.length > 0 ? (
                     filteredVehicles.map((vehicle, index) => (
@@ -259,19 +259,19 @@ const VehiculesPage = () => {
                             acceleration: '',
                             consumption: ''
                           }}
-                          availability={getAvailabilityText(vehicle.status) as unknown}
+                          availability={getAvailabilityText(vehicle.status) as any}
                         />
                       </ScrollReveal>
                     ))
                   ) : (
                     <div className="col-span-full py-12 text-center">
                       <p className="text-lg text-gray-500">
-                        {vehicles.length > 0
+                        {vehicles.length > 0 
                           ? 'Aucun véhicule ne correspond à vos critères de recherche.'
                           : 'Aucun véhicule disponible pour le moment.'}
                       </p>
                       {vehicles.length > 0 && (
-                        <button
+                        <button 
                           onClick={() => {
                             setSelectedFuelTypes([]);
                             setYearRange([minYear, maxYear]);
@@ -288,7 +288,7 @@ const VehiculesPage = () => {
             )}
           </div>
         </section>
-
+        
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <ScrollReveal>
@@ -297,11 +297,11 @@ const VehiculesPage = () => {
                   Vous ne trouvez pas ce que vous cherchez?
                 </h2>
                 <p className="text-gray-700 mb-8 text-lg">
-                  Nous pouvons vous aider à trouver le véhicule parfait qui correspond à vos besoins spécifiques.
+                  Nous pouvons vous aider à trouver le véhicule parfait qui correspond à vos besoins spécifiques. 
                   Contactez-nous pour une recherche personnalisée.
                 </p>
-                <a
-                  href="/contact"
+                <a 
+                  href="/contact" 
                   className="mercedes-button bg-mercedes-darkblue hover:bg-mercedes-black inline-flex items-center group"
                 >
                   Demande spéciale
@@ -314,7 +314,7 @@ const VehiculesPage = () => {
           </div>
         </section>
       </main>
-
+      
       <Footer />
     </>
   );

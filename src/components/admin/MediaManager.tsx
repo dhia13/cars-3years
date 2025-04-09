@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { mediaApi } from '@/services/api';
-import { Trash2, Upload, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Trash2, Upload, RefreshCw, AlertTriangle, Image as ImageIcon, FileText } from 'lucide-react';
 
 interface MediaFile {
   filename: string;
@@ -31,6 +32,8 @@ const MediaManager = () => {
   const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [fileToDelete, setFileToDelete] = useState<MediaFile | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -79,8 +82,10 @@ const MediaManager = () => {
           description: data.message || "Impossible de récupérer les médias. Vérifiez la connexion à Cloudinary.",
           variant: "destructive",
         });
+        setMediaFiles([]);
       } else {
-        setMediaFiles(data || []);
+        console.log('Media files received:', data);
+        setMediaFiles(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error('Error in fetchMediaFiles:', error);
@@ -89,6 +94,7 @@ const MediaManager = () => {
         description: "Impossible de charger les médias. Vérifiez que le serveur est en cours d'exécution.",
         variant: "destructive",
       });
+      setMediaFiles([]);
     } finally {
       setIsLoading(false);
     }
@@ -164,13 +170,22 @@ const MediaManager = () => {
     setShowDeleteDialog(true);
   };
 
+  const handlePreview = (file: MediaFile) => {
+    setPreviewUrl(file.url);
+    setShowPreview(true);
+  };
+
   const handleDelete = async () => {
     if (!fileToDelete) return;
     
     setShowDeleteDialog(false);
     
     try {
-      const result = await mediaApi.delete(fileToDelete.filename);
+      // Utiliser l'ID Cloudinary pour la suppression
+      const fileId = fileToDelete.cloudinary_id || fileToDelete.filename;
+      console.log('Attempting to delete file with ID:', fileId);
+      
+      const result = await mediaApi.delete(fileId);
       
       if (result.error) {
         toast({
@@ -184,7 +199,7 @@ const MediaManager = () => {
           description: "Fichier supprimé avec succès",
         });
         
-        setMediaFiles(mediaFiles.filter(file => file.filename !== fileToDelete.filename));
+        setMediaFiles(mediaFiles.filter(file => file.cloudinary_id !== fileToDelete.cloudinary_id));
       }
     } catch (error) {
       toast({
@@ -201,6 +216,13 @@ const MediaManager = () => {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / 1048576).toFixed(1) + ' MB';
+  };
+
+  const getFileIcon = (fileType: string) => {
+    if (fileType.startsWith('image')) {
+      return <ImageIcon className="h-12 w-12 text-gray-400" />;
+    }
+    return <FileText className="h-12 w-12 text-gray-400" />;
   };
 
   return (
@@ -284,7 +306,7 @@ const MediaManager = () => {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {mediaFiles.length > 0 ? (
+          {mediaFiles && mediaFiles.length > 0 ? (
             mediaFiles.map((file) => (
               <Card key={file.cloudinary_id || file.filename} className="overflow-hidden">
                 <div className="aspect-square relative overflow-hidden bg-gray-100 group">
@@ -293,14 +315,27 @@ const MediaManager = () => {
                       src={file.url} 
                       alt={file.filename}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      onError={(e) => {
+                        console.error('Image failed to load:', file.url);
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+                        target.className = 'w-full h-full object-contain p-4 opacity-50';
+                      }}
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full bg-gray-200">
-                      <p className="text-gray-500">{file.type}</p>
+                      {getFileIcon(file.type)}
                     </div>
                   )}
                   
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handlePreview(file)}
+                    >
+                      <ImageIcon size={16} />
+                    </Button>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -366,6 +401,49 @@ const MediaManager = () => {
             >
               Supprimer
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Aperçu du média</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-auto max-h-[70vh]">
+            {previewUrl && (
+              <img 
+                src={previewUrl} 
+                alt="Aperçu" 
+                className="max-w-full"
+                onError={() => {
+                  toast({
+                    title: "Erreur",
+                    description: "Impossible de charger l'aperçu de l'image",
+                    variant: "destructive",
+                  });
+                }}
+              />
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowPreview(false)}>
+              Fermer
+            </Button>
+            {previewUrl && (
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  navigator.clipboard.writeText(previewUrl);
+                  toast({
+                    title: "URL copiée",
+                    description: "L'URL de l'image a été copiée dans le presse-papiers",
+                  });
+                }}
+              >
+                Copier l'URL
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
