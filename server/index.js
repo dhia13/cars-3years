@@ -23,14 +23,35 @@ app.use(cors({
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-// Connect to MongoDB
-console.log('Connecting to MongoDB with URI:', process.env.MONGODB_URI ? `${process.env.MONGODB_URI.substring(0, 20)}...` : 'undefined');
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB successfully'))
-  .catch(err => {
-    console.error('Failed to connect to MongoDB:', err.message);
-    process.exit(1); // Exit the application on connection failure
-  });
+// Connect to MongoDB with better error handling and retry logic
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      retryWrites: true
+    });
+    console.log('Connected to MongoDB successfully');
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    // Retry connection after 5 seconds
+    setTimeout(connectDB, 5000);
+  }
+};
+
+// Handle MongoDB connection events
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected! Attempting to reconnect...');
+  connectDB();
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+// Initial connection
+connectDB();
 
 // Create upload directories if they don't exist
 const createUploadDirs = () => {
@@ -159,3 +180,4 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
