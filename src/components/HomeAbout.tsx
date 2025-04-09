@@ -54,7 +54,7 @@ const HomeAbout = () => {
               <div className="relative">
                 <div className="absolute -top-6 -left-6 w-32 h-32 border-2 border-mercedes-blue z-0"></div>
                 <img
-                  src="/lovable-uploads/29df00a1-3840-4b5a-b171-484af6b189aa.png"
+                  src="/uploads/29df00a1-3840-4b5a-b171-484af6b189aa.png"
                   alt="Mercedes-Benz Showroom"
                   className="w-full h-auto rounded-sm shadow-2xl relative z-10 brightness-105 contrast-105"
                 />

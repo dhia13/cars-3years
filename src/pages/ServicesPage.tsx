@@ -1,10 +1,10 @@
 
-import { useEffect } from "react";
-import { Truck, ClipboardCheck, FileText, ShieldCheck, Briefcase, Globe } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ServiceCard from "@/components/ServiceCard";
+import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
+import ServiceCard from "@/components/ServiceCard";
+import { Briefcase, ClipboardCheck, FileText, Globe, ShieldCheck, Truck } from "lucide-react";
+import { useEffect } from "react";
 
 const services = [
   {
@@ -83,7 +83,7 @@ const ServicesPage = () => {
   return (
     <>
       <Navbar />
-      
+
       <main>
         <section className="pt-24 pb-16 bg-gradient-to-b from-mercedes-black to-mercedes-darkgray text-white">
           <div className="container mx-auto px-4">
@@ -97,7 +97,7 @@ const ServicesPage = () => {
             </ScrollReveal>
           </div>
         </section>
-        
+
         <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -114,7 +114,7 @@ const ServicesPage = () => {
             </div>
           </div>
         </section>
-        
+
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center">
@@ -126,7 +126,7 @@ const ServicesPage = () => {
                   <p className="text-gray-600 mb-8">
                     Notre approche structurée garantit une expérience fluide et transparente pour nos clients.
                   </p>
-                  
+
                   <div className="space-y-6">
                     <div className="flex">
                       <div className="mr-4">
@@ -137,7 +137,7 @@ const ServicesPage = () => {
                         <p className="text-gray-600">Nous discutons de vos besoins, préférences et budget pour déterminer le véhicule idéal.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex">
                       <div className="mr-4">
                         <div className="w-8 h-8 rounded-full bg-mercedes-blue flex items-center justify-center text-white">2</div>
@@ -147,7 +147,7 @@ const ServicesPage = () => {
                         <p className="text-gray-600">Nous recherchons dans notre réseau européen pour trouver des véhicules correspondant à vos critères.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex">
                       <div className="mr-4">
                         <div className="w-8 h-8 rounded-full bg-mercedes-blue flex items-center justify-center text-white">3</div>
@@ -157,7 +157,7 @@ const ServicesPage = () => {
                         <p className="text-gray-600">Chaque véhicule subit une inspection rigoureuse avant d'être proposé à nos clients.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex">
                       <div className="mr-4">
                         <div className="w-8 h-8 rounded-full bg-mercedes-blue flex items-center justify-center text-white">4</div>
@@ -167,7 +167,7 @@ const ServicesPage = () => {
                         <p className="text-gray-600">Nous gérons tous les aspects administratifs et douaniers pour l'exportation.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex">
                       <div className="mr-4">
                         <div className="w-8 h-8 rounded-full bg-mercedes-blue flex items-center justify-center text-white">5</div>
@@ -177,7 +177,7 @@ const ServicesPage = () => {
                         <p className="text-gray-600">Le véhicule est transporté en toute sécurité jusqu'à destination en Algérie.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex">
                       <div className="mr-4">
                         <div className="w-8 h-8 rounded-full bg-mercedes-blue flex items-center justify-center text-white">6</div>
@@ -190,12 +190,12 @@ const ServicesPage = () => {
                   </div>
                 </ScrollReveal>
               </div>
-              
+
               <div className="md:w-1/2">
                 <ScrollReveal delay={200}>
-                  <img 
-                    src="/lovable-uploads/d6338b3f-2a4f-4279-90e4-8775cb7acd40.png" 
-                    alt="Processus d'exportation" 
+                  <img
+                    src="/uploads/d6338b3f-2a4f-4279-90e4-8775cb7acd40.png"
+                    alt="Processus d'exportation"
                     className="w-full h-auto rounded-sm shadow-xl"
                   />
                 </ScrollReveal>
@@ -203,7 +203,7 @@ const ServicesPage = () => {
             </div>
           </div>
         </section>
-        
+
         <section className="py-16 bg-mercedes-blue text-white">
           <div className="container mx-auto px-4 text-center">
             <ScrollReveal>
@@ -220,7 +220,7 @@ const ServicesPage = () => {
           </div>
         </section>
       </main>
-      
+
       <Footer />
     </>
   );

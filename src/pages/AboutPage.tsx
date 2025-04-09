@@ -52,7 +52,7 @@ const AboutPage = () => {
                   <div className="relative">
                     <div className="absolute -top-4 -left-4 w-24 h-24 border-2 border-mercedes-blue z-0"></div>
                     <img
-                      src="/lovable-uploads/3bf54152-1a0e-47d2-a44f-fae8843a5058.png"
+                      src="/uploads/3bf54152-1a0e-47d2-a44f-fae8843a5058.png"
                       alt="Histoire de DzAuto"
                       className="w-full h-auto rounded-sm shadow-xl relative z-10"
                     />
