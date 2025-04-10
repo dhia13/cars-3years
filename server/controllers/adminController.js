@@ -14,7 +14,6 @@ const cloudinary = require('../utils/cloudinaryConfig');
 // Login admin
 exports.login = async (req, res) => {
   try {
-    console.log({ username, password })
     const { username, password } = req.body;
 
     // Vérifier les identifiants par défaut
