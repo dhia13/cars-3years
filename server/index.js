@@ -14,15 +14,11 @@ const mediaRoutes = require('./routes/mediaRoutes');
 
 const app = express();
 
-const corsOptions = {
-  origin: true, // Reflects the request origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: '*',
+  methods: '*',
+  allowedHeaders: '*'
+}));
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
 
 // Connect to MongoDB
